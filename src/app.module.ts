@@ -7,6 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [
     TasksModule,
+
+    // TypeORM … TypeScriptで記述できるORMapper
     TypeOrmModule.forRoot({
       type: 'postgres', // DBの種類
       port: 5432, // 使用ポート
