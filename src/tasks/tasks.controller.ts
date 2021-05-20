@@ -12,41 +12,44 @@ import {
 } from '@nestjs/common';
 import { TaskPropertyDto } from './dto/task-property.dto';
 import { TaskStatusPipe } from './pipe/task-status.pipe';
+import { TasksService } from './tasks.service';
+import { Task } from './task.entity';
 
 @Controller('tasks')
 export class TasksController {
+  constructor(private tasksService: TasksService) {}
+
   @Get()
-  getTasks() {
-    return 'getTasks Success!';
+  getTasks(): Promise<Task[]> {
+    return this.tasksService.getTasks();
   }
 
   @Get('/:id')
-  getTaskById(@Param('id', ParseIntPipe) id: number) {
+  getTaskById(@Param('id', ParseIntPipe) id: number): Promise<Task> {
     // ParseIntPipeはパイプという機能の一つ
     // コントローラのメソッドに値が引き渡される前に変換、もしくは検証を行う
     // この場合はidを数値型へと変換する（変換できなかった場合は例外をスローする）
-    return `getTaskById Success! Parameter [id:${id}]`;
+    return this.tasksService.getTaskById(id);
   }
 
   @Post()
   @UsePipes(ValidationPipe)
-  createTask(@Body() taskPropertyDto: TaskPropertyDto) {
+  createTask(@Body() taskPropertyDto: TaskPropertyDto): Promise<Task> {
     // @UsePipeを付与したメソッドはバリデーションパイプ
     // 今回でいうとTaskPropertyDtoで定義した値のIsNotEmpty検証が有効になる
-    const { title, description } = taskPropertyDto;
-    return `createTask Success! Parameter [title:${title}, description:${description}]`;
+    return this.tasksService.createTask(taskPropertyDto);
   }
 
   @Delete('/:id')
-  deleteTask(@Param('id', ParseIntPipe) id: number) {
-    return `deleteTask Success! Parameter [id:${id}]`;
+  deleteTask(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.tasksService.deleteTask(id);
   }
 
   @Patch('/:id')
   updateTask(
     @Param('id', ParseIntPipe) id: number,
     @Body('status', TaskStatusPipe) status: string,
-  ) {
-    return `updateTask Success! Parameter [id:${id}, status:${status}]`;
+  ): Promise<Task> {
+    return this.tasksService.updateTask(id, status);
   }
 }
