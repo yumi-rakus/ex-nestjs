@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
+import { Task } from '../src/tasks/task.entity';
 
 @Injectable()
 export class TypeormConfigService implements TypeOrmOptionsFactory {
   createTypeOrmOptions(): TypeOrmModuleOptions {
     const configService = new ConfigService();
+    console.log(__dirname);
     return {
       type: 'postgres',
       host: configService.get<string>('DB_HOSTNAME'),
@@ -13,7 +15,7 @@ export class TypeormConfigService implements TypeOrmOptionsFactory {
       username: configService.get<string>('DB_USERNAME'),
       password: configService.get<string>('DB_PASSWORD'),
       database: configService.get<string>('DB_NAME'),
-      entities: [__dirname + '/../**/*.entity.{js,ts}'],
+      entities: [Task],
       synchronize: this.strToBoolean(
         configService.get<string>('DB_SYNC', 'false'),
       ),
